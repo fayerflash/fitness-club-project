@@ -1,0 +1,36 @@
+{% extends 'club/base.html' %}
+
+{% block title %}{{ title }} - Фитнес-клуб{% endblock %}
+
+{% block content %}
+<h1>{{ title }}</h1>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    
+    {% for field in form %}
+        <div style="margin-bottom: 15px;">
+            <label for="{{ field.id_for_label }}" style="display: block; font-weight: bold; margin-bottom: 5px;">{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}
+                <div style="color: #6c757d; font-size: 12px; margin-top: 5px;">{{ field.help_text }}</div>
+            {% endif %}
+            {% if field.errors %}
+                <ul style="color: #dc3545; list-style: none; padding: 0; margin-top: 5px;">
+                    {% for error in field.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+    {% endfor %}
+    
+    <button type="submit" style="background-color: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 3px; cursor: pointer; margin-right: 10px;">Сохранить</button>
+    <a href="{% url 'promotion_list' %}" style="background-color: #6c757d; color: white; padding: 10px 20px; text-decoration: none; border-radius: 3px; display: inline-block;">Отмена</a>
+</form>
+
+<style>
+    input, textarea, select { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 3px; box-sizing: border-box; }
+    textarea { resize: vertical; }
+</style>
+{% endblock %}

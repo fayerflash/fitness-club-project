@@ -1,0 +1,29 @@
+{% extends 'club/base.html' %}
+
+{% block title %}Редактирование профиля{% endblock %}
+
+{% block content %}
+<h1>✏️ Редактирование профиля</h1>
+
+<form method="post" style="max-width: 400px;">
+    {% csrf_token %}
+    
+    <div style="margin-bottom: 15px;">
+        <label for="full_name" style="display: block; font-weight: bold; margin-bottom: 5px;">ФИО</label>
+        <input type="text" name="full_name" id="full_name" value="{{ user.full_name }}" 
+               style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 3px;">
+    </div>
+    
+    <div style="margin-bottom: 15px;">
+        <label for="phone" style="display: block; font-weight: bold; margin-bottom: 5px;">Телефон</label>
+        <input type="text" name="phone" id="phone" value="{{ user.phone|default:'' }}" 
+               style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 3px;"
+               placeholder="+7 (XXX) XXX-XX-XX">
+    </div>
+    
+    <p style="color: #666;">Email: {{ user.email }} (изменить нельзя)</p>
+    
+    <button type="submit" style="background-color: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 3px; cursor: pointer;">Сохранить</button>
+    <a href="{% url 'profile' %}" style="background-color: #6c757d; color: white; padding: 10px 20px; text-decoration: none; border-radius: 3px; display: inline-block;">Отмена</a>
+</form>
+{% endblock %}

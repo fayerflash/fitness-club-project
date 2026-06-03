@@ -1,0 +1,71 @@
+{% extends 'club/base.html' %}
+
+{% block title %}Тренеры - Фитнес-клуб{% endblock %}
+
+{% block content %}
+<h1>👨‍🏫 Наши тренеры</h1>
+
+<div class="card" style="background-color: #e9ecef;">
+    <h3>📚 Демонстрация заданий Части 4</h3>
+    
+    <details open style="margin-bottom: 10px;">
+        <summary style="cursor: pointer; font-weight: bold;">🔍 ПОИСК ТРЕНЕРОВ (__icontains)</summary>
+        <form method="get" style="margin-top: 10px;">
+            <input type="text" name="search" value="{{ search_query }}" placeholder="Введите имя или специализацию..." style="padding: 8px; width: 300px; border-radius: 3px; border: 1px solid #ddd;">
+            <button type="submit" style="padding: 8px 15px; background-color: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer;">Найти</button>
+            {% if search_query %}
+                <a href="{% url 'trainer_list' %}" style="margin-left: 10px;">Сбросить</a>
+            {% endif %}
+        </form>
+        {% if search_query %}
+            <p style="margin-top: 10px;">Результатов: <strong>{{ trainers|length }}</strong></p>
+        {% endif %}
+    </details>
+    
+    <details style="margin-bottom: 10px;">
+        <summary style="cursor: pointer; font-weight: bold;">📋 values_list() - список имен тренеров</summary>
+        <ul style="list-style: none; padding: 0;">
+            {% for name in trainer_names %}
+                <li>{{ name }}</li>
+            {% endfor %}
+        </ul>
+    </details>
+    
+    <details style="margin-bottom: 10px;">
+        <summary style="cursor: pointer; font-weight: bold;">🔢 count() и exists()</summary>
+        <p>Всего тренеров в базе: <strong>{{ total_trainers }}</strong></p>
+        <p>Есть активные тренеры: <strong>{{ active_trainers_exists|yesno:"Да,Нет" }}</strong></p>
+    </details>
+</div>
+
+{% if user.is_authenticated and user.role != 'client' %}
+    <a href="{% url 'trainer_create' %}" style="display: inline-block; background-color: #28a745; color: white; padding: 10px 20px; border-radius: 3px; text-decoration: none; margin-bottom: 20px;">+ Добавить тренера</a>
+{% endif %}
+
+{% for trainer in trainers %}
+    <div style="display: flex; align-items: center; border: 1px solid #eee; border-radius: 5px; padding: 15px; margin-bottom: 15px; background-color: #fafafa;">
+        {% if trainer.photo %}
+            <img src="{{ trainer.photo.url }}" alt="{{ trainer.full_name }}" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin-right: 20px;">
+        {% else %}
+            <div style="width: 100px; height: 100px; border-radius: 50%; background-color: #ddd; display: flex; align-items: center; justify-content: center; margin-right: 20px; font-size: 40px;">👨‍🏫</div>
+        {% endif %}
+        <div style="flex: 1;">
+            <div style="font-size: 18px; font-weight: bold; color: #333;">{{ trainer.full_name }}</div>
+            <div style="color: #666; margin: 5px 0;">Специализация: {{ trainer.specialization|default:"Не указана" }}</div>
+            <div style="color: #28a745; font-weight: bold;">{{ trainer.get_experience_display }}</div>
+            <div style="color: #666;">{{ trainer.bio|default:"Нет информации"|truncatechars:100 }}</div>
+            {% if trainer.cv_file %}
+                <div>📄 <a href="{{ trainer.cv_file.url }}" target="_blank">Скачать резюме (PDF)</a></div>
+            {% endif %}
+            {% if user.is_authenticated and user.role != 'client' %}
+                <div style="margin-top: 10px;">
+                    <a href="{% url 'trainer_edit' trainer.pk %}" style="color: #ffc107; margin-right: 10px; text-decoration: none;">✏️ Редактировать</a>
+                    <a href="{% url 'trainer_delete' trainer.pk %}" style="color: #dc3545; text-decoration: none;">🗑️ Удалить</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% empty %}
+    <p style="text-align: center; padding: 40px;">😞 Тренеры не найдены{% if search_query %} по запросу "{{ search_query }}"{% endif %}</p>
+{% endfor %}
+{% endblock %}

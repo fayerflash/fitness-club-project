@@ -1,0 +1,14 @@
+{% extends 'club/base.html' %}
+
+{% block title %}Удаление акции - Фитнес-клуб{% endblock %}
+
+{% block content %}
+<h1 style="color: #dc3545;">🗑️ Удаление акции</h1>
+<p>Вы уверены, что хотите удалить акцию <strong>"{{ promotion.title }}"</strong>?</p>
+
+<form method="post" style="display: inline;">
+    {% csrf_token %}
+    <button type="submit" style="background-color: #dc3545; color: white; padding: 10px 20px; border: none; border-radius: 3px; cursor: pointer; margin-right: 10px;">Да, удалить</button>
+</form>
+<a href="{% url 'promotion_list' %}" style="background-color: #6c757d; color: white; padding: 10px 20px; text-decoration: none; border-radius: 3px; display: inline-block;">Отмена</a>
+{% endblock %}

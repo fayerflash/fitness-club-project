@@ -1,0 +1,101 @@
+{% extends 'club/base.html' %}
+
+{% block title %}Абонементы - Фитнес-клуб{% endblock %}
+
+{% block content %}
+<h1>💪 Наши абонементы</h1>
+
+<div class="card" style="background-color: #e9ecef;">
+    <h3>📚 Демонстрация заданий Части 4</h3>
+    
+    <details style="margin-bottom: 10px;">
+        <summary style="cursor: pointer; font-weight: bold;">🔍 Поиск абонементов (__icontains)</summary>
+        <form method="get" style="margin-top: 10px;">
+            <input type="text" name="q" value="{{ search_query }}" placeholder="Поиск абонемента..." style="padding: 8px; width: 300px; border-radius: 3px; border: 1px solid #ddd;">
+            <button type="submit" style="padding: 8px 15px; background-color: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer;">Найти</button>
+            {% if search_query %}
+                <a href="{% url 'membership_list' %}" style="margin-left: 10px;">Сбросить</a>
+            {% endif %}
+        </form>
+        {% if search_query %}
+            <p style="margin-top: 10px;">Результатов поиска (__icontains): <strong>{{ memberships_icontains|length }}</strong></p>
+            <ul style="list-style: none; padding: 0;">
+                {% for m in memberships_icontains %}
+                    <li style="padding: 5px 0;">{{ m.title }} - {{ m.price }} ₽</li>
+                {% empty %}
+                    <li>Ничего не найдено</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </details>
+    
+    <details style="margin-bottom: 10px;">
+        <summary style="cursor: pointer; font-weight: bold;">📊 values() - список словарей</summary>
+        <ul style="list-style: none; padding: 0;">
+            {% for m in memberships_values %}
+                <li style="padding: 5px 0;">ID: {{ m.id }} | {{ m.title }} | {{ m.price }} ₽</li>
+            {% endfor %}
+        </ul>
+    </details>
+    
+    <details style="margin-bottom: 10px;">
+        <summary style="cursor: pointer; font-weight: bold;">📋 values_list() - список кортежей</summary>
+        <ul style="list-style: none; padding: 0;">
+            {% for m in memberships_list %}
+                <li style="padding: 5px 0;">{{ m.0 }} - {{ m.1 }} ₽</li>
+            {% endfor %}
+        </ul>
+    </details>
+    
+    <details style="margin-bottom: 10px;">
+        <summary style="cursor: pointer; font-weight: bold;">🔢 count() и exists()</summary>
+        <p>Всего абонементов: <strong>{{ total_count }}</strong></p>
+        <p>Есть активные абонементы: <strong>{{ active_exists|yesno:"Да,Нет" }}</strong></p>
+        <p>Дорогих абонементов (≥2000₽): <strong>{{ expensive_count }}</strong></p>
+    </details>
+    
+    <details style="margin-bottom: 10px;">
+        <summary style="cursor: pointer; font-weight: bold;">💰 F expressions (увеличение цены на 5%)</summary>
+        <ul style="list-style: none; padding: 0;">
+            {% for m in increased_prices %}
+                <li style="padding: 5px 0;">{{ m.title }}: {{ m.price }} ₽ → <strong>{{ m.increased_price|floatformat:2 }} ₽</strong> (+5%)</li>
+            {% endfor %}
+        </ul>
+    </details>
+</div>
+
+{% if user.is_authenticated and user.role != 'client' %}
+    <a href="{% url 'membership_create' %}" style="display: inline-block; background-color: #28a745; color: white; padding: 10px 20px; border-radius: 3px; text-decoration: none; margin-bottom: 20px;">+ Создать новый абонемент</a>
+{% endif %}
+
+<ul style="list-style: none; padding: 0;">
+    {% for membership in memberships %}
+        <li style="padding: 15px; border-bottom: 1px solid #eee; margin-bottom: 10px; background-color: #fafafa; border-radius: 5px;">
+            <strong><a href="{% url 'membership_detail' membership.pk %}">{{ membership.title }}</a></strong>
+            — {{ membership.price }} ₽
+            <br>
+            <small style="color: #666;">Срок: {{ membership.duration_days }} дней</small>
+            
+            {% if user.is_authenticated and user.role == 'client' %}
+                <br>
+                <a href="{% url 'buy_membership' membership.pk %}" 
+                   style="display: inline-block; background-color: #28a745; color: white; padding: 6px 14px; text-decoration: none; border-radius: 3px; margin-top: 8px;">
+                    🛒 Купить за {{ membership.price }} ₽
+                </a>
+            {% endif %}
+            
+            {% if user.is_authenticated and user.role != 'client' %}
+                <br>
+                <a href="{% url 'membership_edit' membership.pk %}" style="color: #ffc107; margin-right: 10px;">✏️ Редактировать</a>
+                <a href="{% url 'membership_delete' membership.pk %}" style="color: #dc3545;">🗑️ Удалить</a>
+            {% endif %}
+            
+            {% if membership.promotions.all %}
+                <br><small>🎁 Акции: {% for promo in membership.promotions.all %}{{ promo.title }}{% if not forloop.last %}, {% endif %}{% endfor %}</small>
+            {% endif %}
+        </li>
+    {% empty %}
+        <li>Абонементы временно недоступны</li>
+    {% endfor %}
+</ul>
+{% endblock %}

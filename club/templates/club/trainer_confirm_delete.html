@@ -1,0 +1,28 @@
+{% extends 'club/base.html' %}
+
+{% block title %}Удаление тренера - Фитнес-клуб{% endblock %}
+
+{% block content %}
+<h1 style="color: #dc3545;">🗑️ Удаление тренера</h1>
+
+<p>Вы уверены, что хотите удалить тренера?</p>
+
+<div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0;">
+    {% if trainer.photo %}
+        <img src="{{ trainer.photo.url }}" alt="{{ trainer.full_name }}" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin-bottom: 10px;">
+    {% else %}
+        <div style="font-size: 60px;">👨‍🏫</div>
+    {% endif %}
+    <div><strong>{{ trainer.full_name }}</strong></div>
+    <div>Специализация: {{ trainer.specialization|default:"Не указана" }}</div>
+    <div>Опыт: {{ trainer.experience_years }} лет</div>
+</div>
+
+<p style="color: #dc3545;">Это действие нельзя отменить!</p>
+
+<form method="post" style="display: inline;">
+    {% csrf_token %}
+    <button type="submit" style="background-color: #dc3545; color: white; padding: 10px 20px; border: none; border-radius: 3px; cursor: pointer; margin-right: 10px;">Да, удалить</button>
+</form>
+<a href="{% url 'trainer_list' %}" style="background-color: #6c757d; color: white; padding: 10px 20px; text-decoration: none; border-radius: 3px; display: inline-block;">Отмена</a>
+{% endblock %}

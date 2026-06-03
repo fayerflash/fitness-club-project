@@ -1,0 +1,11 @@
+{% extends 'club/base.html' %}
+
+{% block title %}404 - Страница не найдена{% endblock %}
+
+{% block content %}
+<div style="text-align: center; padding: 50px;">
+    <h1 style="color: #dc3545; font-size: 72px; margin: 0;">404</h1>
+    <p style="color: #666; font-size: 18px;">{{ message|default:"Страница не найдена" }}</p>
+    <p><a href="{% url 'home' %}" style="color: #0066cc; text-decoration: none;">Вернуться на главную</a></p>
+</div>
+{% endblock %}

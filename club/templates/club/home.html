@@ -1,0 +1,45 @@
+{% extends 'club/base.html' %}
+
+{% block title %}Главная - Фитнес-клуб{% endblock %}
+
+{% block content %}
+<h1>Фитнес-клуб</h1>
+
+<h2>Популярные абонементы</h2>
+{% for membership in memberships %}
+    <div class="card">
+        <strong>
+            <a href="{% url 'membership_detail' membership.pk %}">{{ membership.title }}</a>
+        </strong><br>
+        {{ membership.price }} ₽<br>
+        <small>Срок: {{ membership.duration_days }} дней</small>
+        {% if user.is_authenticated and user.role == 'client' %}
+            <br>
+            <a href="{% url 'buy_membership' membership.pk %}" 
+               style="display: inline-block; background-color: #28a745; color: white; padding: 6px 14px; text-decoration: none; border-radius: 3px; margin-top: 8px;">
+                🛒 Купить
+            </a>
+        {% endif %}
+    </div>
+{% endfor %}
+
+<h2>Наши тренеры</h2>
+{% for trainer in trainers %}
+    <div class="card">
+        <strong>{{ trainer.full_name }}</strong><br>
+        {{ trainer.specialization }}
+    </div>
+{% empty %}
+    <p>Нет доступных тренеров</p>
+{% endfor %}
+
+<h2>Акции</h2>
+{% for promo in promotions %}
+    <div class="card">
+        <strong>{{ promo.title }}</strong><br>
+        Скидка {{ promo.discount_percent }}%
+    </div>
+{% empty %}
+    <p>Нет активных акций</p>
+{% endfor %}
+{% endblock %}

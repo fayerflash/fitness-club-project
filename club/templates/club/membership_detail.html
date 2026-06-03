@@ -1,0 +1,68 @@
+{% extends 'club/base.html' %}
+
+{% block title %}{{ membership.title }} - Фитнес-клуб{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #eee;">
+    <a href="{% url 'membership_list' %}" style="display: inline-block; padding: 8px 15px; border-radius: 3px; text-decoration: none; margin-right: 10px; background-color: #6c757d; color: white;">← Назад к списку</a>
+    
+    {% if user.is_authenticated and user.role == 'client' %}
+        <a href="{% url 'buy_membership' membership.pk %}" 
+           style="display: inline-block; padding: 8px 20px; border-radius: 3px; text-decoration: none; margin-right: 10px; background-color: #28a745; color: white; font-size: 16px;">
+            🛒 Купить за {{ membership.price }} ₽
+        </a>
+    {% endif %}
+    
+    {% if user.is_authenticated and user.role != 'client' %}
+        <a href="{% url 'membership_edit' membership.pk %}" style="display: inline-block; padding: 8px 15px; border-radius: 3px; text-decoration: none; margin-right: 10px; background-color: #ffc107; color: #333;">✏️ Редактировать</a>
+        <a href="{% url 'membership_delete' membership.pk %}" style="display: inline-block; padding: 8px 15px; border-radius: 3px; text-decoration: none; background-color: #dc3545; color: white;">🗑️ Удалить</a>
+    {% endif %}
+</div>
+
+<h1>{{ membership.title }}</h1>
+
+<div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0;">
+    <p>{{ membership.description|default:"Нет описания" }}</p>
+    <p><span style="font-size: 24px; color: #28a745; font-weight: bold;">{{ membership.price }} ₽</span></p>
+    <p>Срок действия: {{ membership.duration_days }} дней</p>
+    {% if membership.visits_limit %}
+        <p>Лимит посещений: {{ membership.visits_limit }}</p>
+    {% else %}
+        <p>Безлимитный абонемент</p>
+    {% endif %}
+    {% if membership.is_new %}
+        <p><span style="background-color: #28a745; color: white; padding: 3px 8px; border-radius: 3px;">Новинка!</span></p>
+    {% endif %}
+    <p>Есть заказы: {{ has_orders|yesno:"Да,Нет" }} | Количество заказов: {{ orders_count }}</p>
+    {% if membership_with_discount %}
+        <p>Цена со скидкой 10%: <strong>{{ membership_with_discount.price_with_discount|floatformat:2 }} ₽</strong> (F expressions)</p>
+    {% endif %}
+</div>
+
+{% if membership.promotions.all %}
+    <h3>🎁 Акции по этому абонементу:</h3>
+    <ul>
+        {% for promo in membership.promotions.all %}
+            <li><strong>{{ promo.title }}</strong> — скидка {{ promo.discount_percent }}%</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<h2>📌 Похожие абонементы</h2>
+<ul>
+    {% for item in similar_memberships %}
+        <li><a href="{% url 'membership_detail' item.id %}">{{ item.title }}</a> — {{ item.price }} ₽</li>
+    {% empty %}
+        <li>Нет похожих абонементов</li>
+    {% endfor %}
+</ul>
+
+{% if orders_with_users %}
+    <h3>📊 Демонстрация select_related (оплаченные заказы):</h3>
+    <ul>
+        {% for order in orders_with_users %}
+            <li>Заказ №{{ order.id }} — {{ order.user.full_name }} — {{ order.total_amount }} ₽</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+{% endblock %}

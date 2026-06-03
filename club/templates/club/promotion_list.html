@@ -1,0 +1,73 @@
+{% extends 'club/base.html' %}
+
+{% block title %}Акции - Фитнес-клуб{% endblock %}
+
+{% block content %}
+<h1>🎉 Текущие акции</h1>
+
+<div class="card" style="background-color: #e9ecef;">
+    <h3>📚 Демонстрация заданий Части 4</h3>
+    
+    <details style="margin-bottom: 10px;">
+        <summary style="cursor: pointer; font-weight: bold;">🔍 Поиск по названию (__icontains)</summary>
+        <form method="get" style="margin-top: 10px;">
+            <input type="text" name="q" value="{{ search_query }}" placeholder="Поиск акции..." style="padding: 8px; width: 300px; border-radius: 3px; border: 1px solid #ddd;">
+            <button type="submit" style="padding: 8px 15px; background-color: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer;">Найти</button>
+            {% if search_query %}
+                <a href="{% url 'promotion_list' %}" style="margin-left: 10px;">Сбросить</a>
+            {% endif %}
+        </form>
+    </details>
+    
+    <details style="margin-bottom: 10px;">
+        <summary style="cursor: pointer; font-weight: bold;">📊 values() - список словарей</summary>
+        <ul style="list-style: none; padding: 0;">
+            {% for p in promotions_values %}
+                <li>{{ p.title }} - {{ p.discount_percent }}% ({{ p.start_date }} - {{ p.end_date }})</li>
+            {% endfor %}
+        </ul>
+    </details>
+    
+    <details style="margin-bottom: 10px;">
+        <summary style="cursor: pointer; font-weight: bold;">🔢 count() и exists()</summary>
+        <p>Всего активных акций: <strong>{{ promotions_count }}</strong></p>
+        <p>Есть активные акции: <strong>{{ has_promotions|yesno:"Да,Нет" }}</strong></p>
+    </details>
+    
+    <details style="margin-bottom: 10px;">
+        <summary style="cursor: pointer; font-weight: bold;">💰 F expressions (бонусная скидка +5%)</summary>
+        <ul style="list-style: none; padding: 0;">
+            {% for p in promotions_with_bonus %}
+                <li>{{ p.title }}: {{ p.discount_percent }}% → <strong>{{ p.bonus_discount|floatformat:0 }}%</strong> (+5%)</li>
+            {% endfor %}
+        </ul>
+    </details>
+</div>
+
+{% if user.is_authenticated and user.role != 'client' %}
+    <a href="{% url 'promotion_create' %}" style="display: inline-block; background-color: #28a745; color: white; padding: 10px 20px; border-radius: 3px; text-decoration: none; margin-bottom: 20px;">+ Создать новую акцию</a>
+{% endif %}
+
+{% for promo in promotions %}
+    <div style="padding: 15px; margin-bottom: 10px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 5px;">
+        <strong>{{ promo.title }}</strong><br>
+        <span style="font-size: 20px; color: #dc3545; font-weight: bold;">🔥 Скидка {{ promo.discount_percent }}%</span><br>
+        <small>{{ promo.description|default:"Нет описания" }}</small><br>
+        <small>Действует с {{ promo.start_date }} по {{ promo.end_date }} | Осталось дней: {{ promo.get_days_left }}</small><br>
+        {% if promo.memberships.all %}
+            <small>💪 Абонементы по акции: 
+                {% for membership in promo.memberships.all %}
+                    {{ membership.title }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </small>
+        {% endif %}
+        {% if user.is_authenticated and user.role != 'client' %}
+            <br>
+            <a href="{% url 'promotion_edit' promo.pk %}" style="color: #ffc107; margin-right: 10px; text-decoration: none;">✏️ Редактировать</a>
+            <a href="{% url 'promotion_delete' promo.pk %}" style="color: #dc3545; text-decoration: none;">🗑️ Удалить</a>
+        {% endif %}
+    </div>
+{% empty %}
+    <p style="text-align: center; padding: 40px;">😞 Нет активных акций{% if search_query %} по запросу "{{ search_query }}"{% endif %}</p>
+{% endfor %}
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends 'club/base.html' %}
+
+{% block title %}Вход - Фитнес-клуб{% endblock %}
+
+{% block content %}
+<h1>🔑 Вход в систему</h1>
+
+<form method="post" style="max-width: 400px;">
+    {% csrf_token %}
+    
+    {% if form.non_field_errors %}
+        <div style="background-color: #f8d7da; color: #721c24; padding: 10px; border-radius: 3px; margin-bottom: 10px;">
+            {% for error in form.non_field_errors %}
+                {{ error }}
+            {% endfor %}
+        </div>
+    {% endif %}
+    
+    {% for field in form %}
+        <div style="margin-bottom: 15px;">
+            <label for="{{ field.id_for_label }}" style="display: block; font-weight: bold; margin-bottom: 5px;">
+                {{ field.label }}
+            </label>
+            {{ field }}
+            {% if field.errors %}
+                <ul style="color: #dc3545; list-style: none; padding: 0; margin-top: 5px;">
+                    {% for error in field.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+    {% endfor %}
+    
+    <button type="submit" style="background-color: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 3px; cursor: pointer;">Войти</button>
+</form>
+
+<p style="margin-top: 20px;">Нет аккаунта? <a href="{% url 'register' %}">Зарегистрироваться</a></p>
+{% endblock %}

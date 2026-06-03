@@ -1,0 +1,40 @@
+{% extends 'club/base.html' %}
+
+{% block title %}Аналитика - Фитнес-клуб{% endblock %}
+
+{% block content %}
+<h1>📊 Аналитика фитнес-клуба</h1>
+
+<div class="card" style="background-color: #e9ecef;">
+    <h2>📈 Агрегация данных</h2>
+    <p>Средняя цена абонемента: <span style="font-size: 24px; font-weight: bold; color: #28a745;">{{ avg_price.avg_price|default:"0" }} ₽</span></p>
+    <p>Общая сумма оплаченных заказов: <span style="font-size: 24px; font-weight: bold; color: #28a745;">{{ total_paid.total|default:"0" }} ₽</span></p>
+    <p>Минимальная цена: {{ min_max_price.min_price|default:"0" }} ₽ | Максимальная цена: {{ min_max_price.max_price|default:"0" }} ₽</p>
+</div>
+
+<h2>🏋️ Количество занятий по услугам</h2>
+<ul>{% for service in services_stats %}<li>{{ service.title }} — <strong>{{ service.schedules_count }}</strong> занятий</li>{% endfor %}</ul>
+
+<h2>💪 Количество покупок абонементов</h2>
+<ul>{% for membership in memberships_stats %}<li>{{ membership.title }} — <strong>{{ membership.purchases_count }}</strong> покупок</li>{% endfor %}</ul>
+
+<h2>👥 Статистика по заказам пользователей</h2>
+<ul>{% for user in users_orders_stats %}<li><strong>{{ user.user__full_name }}</strong><br>Заказов: {{ user.orders_count }} | Сумма: {{ user.total_spent }} ₽</li>{% endfor %}</ul>
+
+<div class="card">
+    <h3>📚 Демонстрация заданий Части 4</h3>
+    <details style="margin-bottom: 10px;">
+        <summary style="cursor: pointer; font-weight: bold;">📊 values_list() - список кортежей</summary>
+        <ul>{% for m in membership_prices %}<li>{{ m.0 }} - {{ m.1 }} ₽</li>{% endfor %}</ul>
+    </details>
+    <details style="margin-bottom: 10px;">
+        <summary style="cursor: pointer; font-weight: bold;">🔢 count() и exists()</summary>
+        <p>Всего заказов: {{ total_orders }} | Оплаченных: {{ paid_orders_count }} | Отмененных: {{ cancelled_orders_count }}</p>
+        <p>Есть оплаченные заказы: {{ has_paid_orders|yesno:"Да,Нет" }}</p>
+    </details>
+    <details style="margin-bottom: 10px;">
+        <summary style="cursor: pointer; font-weight: bold;">💰 F expressions (все абонементы)</summary>
+        <ul>{% for m in all_memberships %}<li>{{ m.title }}: {{ m.price }} ₽</li>{% endfor %}</ul>
+    </details>
+</div>
+{% endblock %}
