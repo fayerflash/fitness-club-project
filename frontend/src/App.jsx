@@ -28,8 +28,9 @@ function Layout({ children }) {
 
   return (
     <div className="app">
+      <a href="#main-content" className="skip-link">Перейти к основному содержимому</a>
       {!isAdmin && <Navbar />}
-      <main className="main-content">{children}</main>
+      <main id="main-content" className="main-content" role="main">{children}</main>
       {!isAdmin && (
         <footer className="footer">
           <div className="footer-inner">

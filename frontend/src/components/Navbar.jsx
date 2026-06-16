@@ -11,10 +11,10 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="navbar">
+    <nav className="navbar" aria-label="Основная навигация">
       <div className="navbar-inner">
-        <NavLink to="/" className="navbar-brand">
-          <span>🏋️</span> FitClub
+        <NavLink to="/" className="navbar-brand" aria-label="FitClub, на главную">
+          <span aria-hidden="true">🏋️</span> FitClub
         </NavLink>
 
         <div className="navbar-links">

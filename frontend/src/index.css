@@ -30,6 +30,27 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
 .app { min-height: 100vh; display: flex; flex-direction: column; }
 .main-content { flex: 1; }
 
+/* ===== Доступность (a11y) ===== */
+.skip-link {
+  position: absolute; left: 8px; top: -48px;
+  background: var(--primary); color: #fff;
+  padding: 0.6rem 1rem; border-radius: 6px;
+  font-weight: 600; z-index: 1000;
+  transition: top 0.2s ease;
+}
+.skip-link:focus { top: 8px; }
+
+a:focus-visible, button:focus-visible, input:focus-visible,
+.nav-link:focus-visible, .navbar-brand:focus-visible {
+  outline: 3px solid #ffd60a;
+  outline-offset: 2px;
+}
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  overflow: hidden; clip: rect(0,0,0,0);
+}
+
 /* ===== Statsbar (под навбаром) ===== */
 .statsbar {
   background: #fff;
@@ -744,7 +765,7 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
   body { background: #fff !important; color: #000 !important; }
 
   /* Скрываем всё лишнее */
-  .navbar, .footer, .print-btn, .hero,
+  .navbar, .footer, .print-btn, .hero, .skip-link,
   .btn-favorite, .search-bar, .hero-btns,
   .admin-sidebar, .modal-overlay,
   .widget-actions, .widget-link,
